@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+
+
+
+        <ul class="list-group mt-4 mb-4">
+            <li class="list-group-item">
+                <span class="float-right mr-3">From: {{ task.creation_date }}<br> To: {{ task.deadline }} </span>
+                <h1 class="display-4 mt-0">Task: {{ task.name }}</h1>
+            </li>
+            <span class="list-group ml-4 mr-4">
+            <h2 class="mt-4">Title: {{ task.title }}</h2>
+            <h3 class="mt-2">Task parameters:</h3>
+            <span>Paragraph number: {{ task.paragraph_number }}<br>
+            Words number: {{ task.words_number }}</span><br>
+
+            {% if is_student %}
+                {% if work.result is not None %}
+                <h2 class="mt-2">Result:</h2>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            {{ work.commentary }}
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary float-right">{{ work.result }}</button>
+                    </div>
+                {% endif %}
+
+                <h2 class="mt-2">Your work:</h2>
+                {% if work.text is not None %}
+                    {% if work.paragraph_number >= task.paragraph_number %}
+                        <div class="alert alert-success" role="alert">
+                        Paragraphs: {{ work.paragraph_number }}/{{ task.paragraph_number }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                        Paragraphs: {{ work.paragraph_number }}/{{ task.paragraph_number }}
+                        </div>
+                    {% endif %}
+                    {% if work.words_number >= task.words_number %}
+                        <div class="alert alert-success" role="alert">
+                        Words: {{ work.words_number }}/{{ task.words_number }}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                        Words: {{ work.words_number }}/{{ task.words_number }}
+                        </div>
+                    {% endif %}
+                    {% if work.mistakes_number <= 0%}
+                        <div class="alert alert-success" role="alert">
+                        No mistakes!
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                        {{ work.mistakes_number }} mistakes: {{ work.mistakes }}
+                        </div>
+                    {% endif %}
+                    {% if work.specialwords_number >= 3%}
+                                        <div class="alert alert-success" role="alert">
+                                        {{ work.specialwords_number }}/3 special words: {{ work.specialwords }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                        {{ work.specialwords_number }}/3 special words: {{ work.specialwords }}
+                                        </div>
+                                    {% endif %}
+                {% endif %}
+                <form id="check_assay" method="POST">
+                {% csrf_token %}
+                    {{ work_form }}
+                <button form="check_assay" type="Submit" class="btn btn-primary mt-4 float-right" {% if now > task.deadline or work.result is not None%} disabled {% endif %}>Submit</button>
+                </form>
+            {% endif %}
+
+            {% if is_teacher %}
+
+                <h2 class="mt-4">Student's works:</h2>
+                {% for work in works_list %}
+
+                    <div class="card m-2">
+                        <div class="card-body">
+                            <div><h5 class="card-title">Student: {{ work.student.get_full_name }}</h5></div>
+                            <span>
+                                {% if work.text is not None %}
+                                    <span class="mb-2">{{ work.text|linebreaks }}</span>
+                                    {% if work.paragraph_number >= task.paragraph_number %}
+                                        <div class="alert alert-success" role="alert">
+                                        Paragraphs: {{ work.paragraph_number }}/{{ task.paragraph_number }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                        Paragraphs: {{ work.paragraph_number }}/{{ task.paragraph_number }}
+                                        </div>
+                                    {% endif %}
+                                    {% if work.words_number >= task.words_number %}
+                                        <div class="alert alert-success" role="alert">
+                                        Words: {{ work.words_number }}/{{ task.words_number }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                        Words: {{ work.words_number }}/{{ task.words_number }}
+                                        </div>
+                                    {% endif %}
+                                    {% if work.mistakes_number <= 0%}
+                                        <div class="alert alert-success" role="alert">
+                                        No mistakes!
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                        {{ work.mistakes_number }} mistakes: {{ work.mistakes }}
+                                        </div>
+                                    {% endif %}
+                                    {% if work.specialwords_number >= 3%}
+                                        <div class="alert alert-success" role="alert">
+                                        {{ work.specialwords_number }}/3 special words: {{ work.specialwords }}
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-danger" role="alert">
+                                        {{ work.specialwords_number }}/3 special words: {{ work.specialwords }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    Empty work...<br><br>
+                                {% endif %}
+                            </span>
+
+                            <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#rateModal{{ work.id }}">
+                                {% if work.result is not None %}
+                                    {{ work.result }}
+                                {% else %}
+                                    Rate
+                                {% endif %}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="modal fade bd-example-modal-lg" id="rateModal{{ work.id }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Rate {{ work.student.get_full_name }}</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <form id="rate_form{{ work.id }}" method="POST">
+                                        {% csrf_token %}
+                                        <input name="id" type="hidden" value="{{ work.id }}">
+                                        <p>Result:<br><input class="form-control" name="result" maxlength="30" value="{{ work.result }}"></p>
+                                        <p>Commentary:<br><textarea class="form-control" name="commentary"> {{ work.commentary }} </textarea></p>
+                                    </form>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button form="rate_form{{ work.id }}" type="Submit" class="btn btn-primary">Rate</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    Nothing found...
+                {% endfor %}
+
+
+
+            {% endif %}
+
+            <a class="btn btn-secondary mt-4" role="button" href="/tasks/?status={{ status }}">Back</a>
+      </span>
+
+        </ul>
+    </div>
+{%  endblock %}

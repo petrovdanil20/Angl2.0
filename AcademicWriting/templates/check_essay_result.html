@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <h1 class="mt-4">Check essay results:</h1>
+
+        <h2>Text:</h2>
+        {% for line in text %}
+            <p>
+                {{ line }}
+            </p>
+        {% endfor %}
+
+        <h4>Words: {{ words }}</h4>
+        <h4>Paragraphs: {{ paragraphs }}</h4>
+        <h4>Special words: {{ spwords }}</h4>
+        <h4>Mistakes: {{ mistakes }}</h4>
+        <h4>Percentage: {{ percentage }}%</h4>
+
+    </div>
+{%  endblock %}
+

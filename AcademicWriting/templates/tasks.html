@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <h1 class="mb-4">Tasks:</h1>
+
+        {% if is_teacher %}
+            <button type="button" class="btn btn-info float-right" data-toggle="modal" data-target="#addTaskModal">Add</button>
+        {% endif %}
+
+
+                    <div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Add task</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <form id="addTask" method="POST">
+                                        {% csrf_token %}
+                                        {{ form }}
+                                    </form>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button form="addTask" type="Submit" class="btn btn-primary">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link {% if str != 'current' and str != 'finished' %} active {% endif %}" href="/tasks/?status=all">All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if str == 'current' %} active {% endif %}" href="/tasks/?status=current">Current</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if str == 'finished' %} active {% endif %}" href="/tasks/?status=finished">Finished</a>
+          </li>
+        </ul>
+
+        <div class="card">
+        {% for task in tasks %}
+
+            <div class="card m-2">
+                <h3 class="card-header">{{ task.name }}</h3>
+                <div class="card-body">
+                    <span class="float-right mr-3">From: {{ task.creation_date }}<br>
+                        To: {{ task.deadline }} <br>
+                        <span class="float-right mr-0 mt-3"><a class="btn btn-primary" href="/tasks/task/{{ task.id }}/?status={{ str }}" role="button">Open</a> </span></span>
+                    <h5 class="card-title">Title: {{ task.title }}</h5>
+                    <p class="card-text">Paragraph number: {{ task.paragraph_number }}<br>
+                    Words number: {{ task.words_number }}</p>
+
+                </div>
+            </div>
+            <ul class="list-group m-2">
+
+                <li class="list-group-item">
+                    <h2 class="float-right mr-3">{{ task.name }}</h2>
+                    <span>From: {{ task.creation_date }}</span><br>
+                    <span>To: {{ task.deadline }}</span><br><br>
+                    <span><b>Title: {{ task.title }}</b></span><br>
+                    <span>Paragraph number: {{ task.paragraph_number }}</span><br>
+                    <span>Words number: {{ task.words_number }}</span><br>
+                    <span class="float-right mr-3"><a class="btn btn-primary" href="/tasks/task/{{ task.id }}/?status={{ str }}" role="button">Open</a> </span>
+                </li>
+            </ul>
+        {% empty %}
+            <h3 class="m-4">Nothing found...</h3>
+        {% endfor %}
+        </div>
+    </div>
+{%  endblock %}

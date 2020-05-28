@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>Articles:</h1>
+
+        {% for article in articles %}
+            <ul class="list-group mt-4">
+                <li class="list-group-item">
+                    <b>{{ article.name }}</b><br>
+                    <span>{{ article.creation_date }}</span><br>
+                    <span>{{ article.text|truncatechars:'700' }}</span><br>
+                    <span class="float-right mr-3"><a class="btn btn-primary" role="button" href="/articles/details/{{ article.id }}">Show</a> </span>
+                </li>
+            </ul>
+        {% endfor %}
+
+    </div>
+{%  endblock %}

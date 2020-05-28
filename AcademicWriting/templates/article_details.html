@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+
+        <h1 class="mt-4">Article: {{ article.name }}</h1>
+
+        <p>Creation date: {{ article.creation_date }}</p>
+        <p>{{ article.text|linebreaks }}</p>
+
+        <p><a class="btn btn-secondary" role="button" href="/articles">Back</a> </p>
+
+    </div>
+{%  endblock %}

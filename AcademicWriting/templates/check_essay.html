@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+
+        <h1 class="mt-4">Check essay:</h1>
+
+        <form id="check_assay" method="POST">
+            {% csrf_token %}
+                {{ form }}
+            <button form="check_assay" type="Submit" class="btn btn-primary mt-4">Add</button>
+        </form>
+
+    </div>
+{%  endblock %}
+
